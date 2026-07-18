@@ -8,9 +8,11 @@ import { trackEvent } from "@/lib/analytics";
  * 1. "Order Now" - triggers a direct call/WhatsApp action to 01754222891
  * 2. "✅ Compare Before You Buy" - opens the fixed Rokomari URL in a new tab
  */
-export default function OrderActions({ productName = "this product", layout = "row" }) {
-  const waLink = buildWhatsAppOrderLink(productName);
 
+
+export default function OrderActions({ productName = "this product", layout = "row", compareUrl }) {
+  const waLink = buildWhatsAppOrderLink(productName);
+const finalCompareUrl = compareUrl && compareUrl.trim() ? compareUrl : COMPARE_URL;
   const handleOrderNow = () => {
     trackEvent("order_now_click", { product_name: productName, phone: ORDER_PHONE_DISPLAY });
   };
@@ -43,7 +45,7 @@ export default function OrderActions({ productName = "this product", layout = "r
       </div>
 
       <a
-        href={COMPARE_URL}
+href={finalCompareUrl}
         target="_blank"
         rel="noopener noreferrer"
         onClick={handleCompare}
