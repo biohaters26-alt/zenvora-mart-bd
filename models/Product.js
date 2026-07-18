@@ -23,6 +23,7 @@ const ProductSchema = new mongoose.Schema(
     compareAtPrice: { type: Number, default: 0 },
     stock: { type: Number, default: 0 },
     sku: { type: String, default: "" },
+    compareUrl: { type: String, default: "" },
     variants: [VariantSchema],
     tags: [{ type: String }],
     isFeatured: { type: Boolean, default: false },
