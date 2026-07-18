@@ -1,0 +1,106 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-display: "Poppins", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, sans-serif;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #22e8f5 #0a0f16;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #0a0f16;
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #22e8f5, #1de9a3);
+  border-radius: 8px;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #05070a;
+  color: #e6f7f9;
+  background-image: radial-gradient(circle at 15% 0%, rgba(34, 232, 245, 0.09), transparent 40%),
+    radial-gradient(circle at 85% 20%, rgba(29, 233, 163, 0.07), transparent 40%);
+  background-attachment: fixed;
+}
+
+@layer components {
+  /* Core frosted-glass crystal layer */
+  .glass-panel {
+    @apply relative bg-white/[0.03] backdrop-blur-xl border border-white/[0.08] rounded-2xl shadow-crystal;
+  }
+
+  .glass-panel::before {
+    content: "";
+    @apply absolute inset-0 rounded-2xl pointer-events-none;
+    background: linear-gradient(135deg, rgba(34, 232, 245, 0.08), transparent 60%);
+  }
+
+  .glass-card {
+    @apply glass-panel hover:border-cyan-glow/40 transition-all duration-300 hover:shadow-glow;
+  }
+
+  .glow-border {
+    @apply border border-cyan-glow/30 shadow-[0_0_18px_rgba(34,232,245,0.18)];
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 font-semibold text-charcoal-950
+      bg-gradient-to-r from-cyan-glow to-emerald-glow
+      hover:shadow-glow hover:scale-[1.02] active:scale-[0.98]
+      transition-all duration-200;
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 font-semibold
+      border border-cyan-glow/40 text-cyan-soft bg-white/[0.02] backdrop-blur-md
+      hover:bg-cyan-glow/10 hover:border-cyan-glow transition-all duration-200;
+  }
+
+  .btn-order-now {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 font-bold text-sm
+      text-charcoal-950 bg-gradient-to-r from-emerald-glow to-cyan-glow
+      shadow-[0_0_16px_rgba(29,233,163,0.35)]
+      hover:shadow-[0_0_28px_rgba(29,233,163,0.55)] hover:scale-105
+      active:scale-95 transition-all duration-200;
+  }
+
+  .link-compare {
+    @apply text-xs sm:text-sm font-medium text-cyan-soft underline decoration-cyan-glow/40 underline-offset-4
+      hover:text-cyan-glow hover:decoration-cyan-glow transition-colors duration-200;
+  }
+
+  .input-field {
+    @apply w-full rounded-xl bg-white/[0.04] border border-white/10 px-4 py-3 text-sm text-white
+      placeholder:text-white/30 focus:outline-none focus:border-cyan-glow/60 focus:ring-2
+      focus:ring-cyan-glow/20 transition-all duration-200;
+  }
+
+  .section-title {
+    @apply font-display text-2xl sm:text-3xl font-bold text-white tracking-tight;
+  }
+
+  .badge {
+    @apply inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold;
+  }
+
+  .badge-cyan {
+    @apply badge bg-cyan-glow/10 text-cyan-soft border border-cyan-glow/30;
+  }
+
+  .badge-emerald {
+    @apply badge bg-emerald-glow/10 text-emerald-soft border border-emerald-glow/30;
+  }
+}
