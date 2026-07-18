@@ -12,6 +12,7 @@ const EMPTY_FORM = {
   compareAtPrice: "",
   stock: "",
   sku: "",
+  compareUrl: "",
   shortDescription: "",
   description: "",
   images: "",
@@ -43,6 +44,7 @@ export default function AdminProductsClient({ initialProducts }) {
       compareAtPrice: product.compareAtPrice || "",
       stock: product.stock,
       sku: product.sku || "",
+      compareUrl: product.compareUrl || "",
       shortDescription: product.shortDescription || "",
       description: product.description || "",
       images: (product.images || []).join(", "),
@@ -270,7 +272,12 @@ export default function AdminProductsClient({ initialProducts }) {
                 onChange={(e) => setForm({ ...form, sku: e.target.value })}
                 className="input-field"
               />
-
+             <input
+                placeholder="Compare-price link (optional, e.g. Daraz/Rokomari URL)"
+                value={form.compareUrl}
+                onChange={(e) => setForm({ ...form, compareUrl: e.target.value })}
+                className="input-field sm:col-span-2"
+              />
               <input
                 required
                 placeholder="Image URLs, comma separated"
