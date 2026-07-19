@@ -10,7 +10,7 @@ export default function CouponBox() {
   const [message, setMessage] = useState(null);
 
   const handleApply = async (e) => {
-    e.preventDefault();
+    if (e && e.preventDefault) e.preventDefault();
     if (!code.trim()) return;
 
     setLoading(true);
@@ -58,16 +58,22 @@ export default function CouponBox() {
   }
 
   return (
-    <form onSubmit={handleApply} className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2">
       <div className="flex gap-2">
         <input
           type="text"
           value={code}
           onChange={(e) => setCode(e.target.value.toUpperCase())}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              handleApply(e);
+            }
+          }}
           placeholder="Enter promo code"
           className="input-field !py-2.5 flex-1"
         />
-        <button type="submit" disabled={loading} className="btn-outline !py-2.5 shrink-0 disabled:opacity-50">
+        <button type="button" onClick={handleApply} disabled={loading} className="btn-outline !py-2.5 shrink-0 disabled:opacity-50">
           {loading ? "Checking..." : "Apply"}
         </button>
       </div>
@@ -76,6 +82,6 @@ export default function CouponBox() {
           {message.text}
         </p>
       )}
-    </form>
+    </div>
   );
 }
