@@ -61,7 +61,8 @@ export default async function ProductDetailPage({ params }) {
 
           <div className="glass-panel p-5 mt-4">
             <p className="text-sm font-semibold text-white mb-3">Quick Order (Recommended)</p>
-         <OrderActions productName={product.name} compareUrl={product.compareUrl} />
+        
+           <OrderActions productName={product.name} compareUrl={product.compareUrl} price={product.price} />
             
           </div>
 
