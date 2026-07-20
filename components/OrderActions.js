@@ -125,7 +125,7 @@ export default function OrderActions({ productName = "this product", layout = "r
       )}
 
       <div className="flex gap-2">
-        
+         <a
           href={waLink}
           target="_blank"
           rel="noopener noreferrer"
@@ -145,7 +145,7 @@ export default function OrderActions({ productName = "this product", layout = "r
         </a>
       </div>
 
-      
+      <a
         href={finalCompareUrl}
         target="_blank"
         rel="noopener noreferrer"
