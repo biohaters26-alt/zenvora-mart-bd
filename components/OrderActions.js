@@ -1,30 +1,131 @@
 "use client";
 
+import { useState } from "react";
 import { buildWhatsAppOrderLink, buildTelLink, COMPARE_URL, ORDER_PHONE_DISPLAY } from "@/lib/constants";
 import { trackEvent } from "@/lib/analytics";
 
-/**
- * Mandatory action pair required on every product:
- * 1. "Order Now" - triggers a direct call/WhatsApp action to 01754222891
- * 2. "✅ Compare Before You Buy" - opens the fixed Rokomari URL in a new tab
- */
+export default function OrderActions({ productName = "this product", layout = "row", compareUrl, price }) {
+  const finalCompareUrl = compareUrl && compareUrl.trim() ? compareUrl : COMPARE_URL;
 
+  const [couponInput, setCouponInput] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
+  const [couponLoading, setCouponLoading] = useState(false);
+  const [couponMessage, setCouponMessage] = useState(null);
 
-export default function OrderActions({ productName = "this product", layout = "row", compareUrl }) {
-  const waLink = buildWhatsAppOrderLink(productName);
-const finalCompareUrl = compareUrl && compareUrl.trim() ? compareUrl : COMPARE_URL;
+  const waLink = appliedCoupon
+    ? buildWhatsAppOrderLink(productName, {
+        price,
+        couponCode: appliedCoupon.code,
+        discount: appliedCoupon.discount,
+        finalPrice: appliedCoupon.finalPrice
+      })
+    : buildWhatsAppOrderLink(productName, price ? { price } : undefined);
+
   const handleOrderNow = () => {
-    trackEvent("order_now_click", { product_name: productName, phone: ORDER_PHONE_DISPLAY });
+    trackEvent("order_now_click", {
+      product_name: productName,
+      phone: ORDER_PHONE_DISPLAY,
+      coupon: appliedCoupon ? appliedCoupon.code : undefined
+    });
   };
 
   const handleCompare = () => {
     trackEvent("compare_before_buy_click", { product_name: productName });
   };
 
+  const handleApplyCoupon = async (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    if (!couponInput.trim() || !price) return;
+
+    setCouponLoading(true);
+    setCouponMessage(null);
+    try {
+      const res = await fetch("/api/coupons/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: couponInput.trim(), subtotal: price })
+      });
+      const data = await res.json();
+
+      if (!data.success) {
+        setCouponMessage({ type: "error", text: data.message });
+        setAppliedCoupon(null);
+        return;
+      }
+
+      setAppliedCoupon({
+        code: data.coupon.code,
+        discount: data.discount,
+        finalPrice: Math.max(price - data.discount, 0)
+      });
+      setCouponMessage({ type: "success", text: data.message });
+    } catch (err) {
+      setCouponMessage({ type: "error", text: "Failed to validate coupon. Try again." });
+      setAppliedCoupon(null);
+    } finally {
+      setCouponLoading(false);
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponMessage(null);
+    setCouponInput("");
+  };
+
   return (
     <div className={`flex ${layout === "row" ? "flex-col sm:flex-row sm:items-center" : "flex-col"} gap-3`}>
+      {typeof price === "number" && (
+        <div className="flex flex-col gap-1">
+          {appliedCoupon ? (
+            <div className="glass-card p-3 flex items-center justify-between gap-3">
+              <div>
+                <p className="text-xs font-semibold text-emerald-soft">
+                  Coupon "{appliedCoupon.code}" applied
+                </p>
+                <p className="text-xs text-white/50">
+                  Final price: ৳{appliedCoupon.finalPrice} (saved ৳{appliedCoupon.discount})
+                </p>
+              </div>
+              <button
+                onClick={handleRemoveCoupon}
+                className="text-xs text-red-300 hover:text-red-200 underline shrink-0"
+              >
+                Remove
+              </button>
+            </div>
+          ) : (
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={couponInput}
+                onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleApplyCoupon(e);
+                }}
+                placeholder="Have a coupon code?"
+                className="input-field !py-2 flex-1"
+              />
+              <button
+                type="button"
+                onClick={handleApplyCoupon}
+                disabled={couponLoading}
+                className="btn-outline !py-2 shrink-0 disabled:opacity-50"
+              >
+                {couponLoading ? "Checking..." : "Apply"}
+              </button>
+            </div>
+          )}
+          {couponMessage && (
+            <p className={`text-xs ${couponMessage.type === "error" ? "text-red-300" : "text-emerald-soft"}`}>
+              {couponMessage.text}
+            </p>
+          )}
+        </div>
+      )}
+
       <div className="flex gap-2">
-        <a
+        
           href={waLink}
           target="_blank"
           rel="noopener noreferrer"
@@ -44,8 +145,8 @@ const finalCompareUrl = compareUrl && compareUrl.trim() ? compareUrl : COMPARE_U
         </a>
       </div>
 
-      <a
-href={finalCompareUrl}
+      
+        href={finalCompareUrl}
         target="_blank"
         rel="noopener noreferrer"
         onClick={handleCompare}
