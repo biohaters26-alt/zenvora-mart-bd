@@ -73,7 +73,7 @@ export default function ProductCard({ product }) {
         </button>
 
         <div className="mt-2 pt-2 border-t border-white/[0.06]">
-         <OrderActions productName={product.name} layout="col" compareUrl={product.compareUrl} />
+         <OrderActions productName={product.name} layout="col" compareUrl={product.compareUrl} price={product.price} />
             
         </div>
       </div>
